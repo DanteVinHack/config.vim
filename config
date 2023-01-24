@@ -12,8 +12,8 @@ set scrolloff=10
 set hidden
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
-nmap <leader>w :w<cr>
-nmap <leader>qq :q!<cr>
+nmap <leader>w :w!<cr>
+nmap <leader>qq :q<cr>
 nmap <leader>qa :bufdo bd<cr>
 nmap <leader>l :bnext<cr>
 nmap <leader>h :bprevious<cr>
@@ -41,6 +41,7 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'mattn/emmet-vim'
 Plug 'preservim/nerdtree'
 Plug 'ryanoasis/vim-devicons'
 Plug 'airblade/vim-gitgutter'
@@ -50,8 +51,6 @@ Plug 'jesseduffield/lazygit'
 Plug 'neoclide/coc-eslint'
 Plug 'jiangmiao/auto-pairs'
 Plug 'voldikss/vim-floaterm'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 Plug 'puremourning/vimspector'
 Plug 'tpope/vim-commentary'
 Plug 'prettier/vim-prettier', {
@@ -63,10 +62,10 @@ call plug#end()
 
 " Prettier configs
 let g:prettier#quickfix_enabled = 0
-autocmd BufWritePre *.ts,*.tsx,*.js,*.jsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
+autocmd BufWritePre *.ts,*.tsx,*.js,*.jsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.cpp,*.vue,*.yaml,*.html PrettierAsync
 
 " Coc configs
-let g:coc_global_extensions = ['coc-tsserver', 'coc-vetur']
+let g:coc_global_extensions = ['coc-tsserver', 'coc-vetur', 'coc-clangd']
 
 " Airline
 let g:airline#extensions#tabline#fnamemod = ':t'
@@ -139,16 +138,37 @@ let g:floaterm_height=0.9
 map <leader>b :Bufstop<CR>
 let g:BufstopAutoSpeedToggle = 1
 
-" Fzf maps
-map <Leader>ff :Files<CR>
-map <Leader>fb :BLines<CR>
-map <Leader>fa :Rg<CR>
-let $FZF_DEFAULT_COMMAND = 'fd --type f'
+" HTML maps
+let g:user_emmet_leader_key='<tab>'
+let g:user_emmet_settings = {
+\  'variables': {'lang': 'ja'},
+\  'html': {
+\    'default_attributes': {
+\      'option': {'value': v:null},
+\      'textarea': {'id': v:null, 'name': v:null, 'cols': 10, 'rows': 10},
+\    },
+\    'snippets': {
+\      'html:5': "<!DOCTYPE html>\n"
+\              ."<html lang=\"${lang}\">\n"
+\              ."<head>\n"
+\              ."\t<meta charset=\"${charset}\"/>\n"
+\              ."\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>\n"
+\              ."\t<link rel=\"stylesheet\" href=\"style.css\">\n"
+\              ."\t<title>Page</title>\n"
+\              ."</head>\n"
+\              ."<body>\n"
+\              ."\n\n"
+\              ."\t<script src=\"app.js\"></script>\n"
+\              ."</body>\n"
+\              ."</html>",
+\    },
+\  },
+\}
 
 " Show docs keys
 map <Leader>k :call <SID>show_documentation()<CR>
 function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
+if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
   else
     call CocAction('doHover')
