@@ -13,7 +13,7 @@ set hidden
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 nmap <leader>w :w!<cr>
-nmap <leader>qq :q<cr>
+nmap <leader>qq :bd<cr>
 nmap <leader>qa :bufdo bd<cr>
 nmap <leader>l :bnext<cr>
 nmap <leader>h :bprevious<cr>
@@ -27,7 +27,7 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 
 " Remove sounds
 set noerrorbells
-set novisualbell 
+set novisualbell
 set t_vb=
 set tm=500
 
@@ -41,20 +41,22 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'mattn/emmet-vim'
 Plug 'preservim/nerdtree'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'ryanoasis/vim-devicons'
-Plug 'airblade/vim-gitgutter'
 Plug 'joshdick/onedark.vim'
+Plug 'airblade/vim-gitgutter'
 Plug 'mihaifm/bufstop'
-Plug 'jesseduffield/lazygit'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc-eslint'
 Plug 'jiangmiao/auto-pairs'
 Plug 'voldikss/vim-floaterm'
 Plug 'puremourning/vimspector'
 Plug 'tpope/vim-commentary'
+Plug 'wookayin/fzf-ripgrep.vim'
 Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install --frozen-lockfile --production',
+  \ 'do': 'npm install --frozen-lockfile --production',
   \ 'branch': 'release/0.x'
   \ }
 
@@ -62,10 +64,16 @@ call plug#end()
 
 " Prettier configs
 let g:prettier#quickfix_enabled = 0
-autocmd BufWritePre *.ts,*.tsx,*.js,*.jsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.cpp,*.vue,*.yaml,*.html PrettierAsync
+autocmd BufWritePre *.ts,*.tsx,*.js,*.jsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
+
+" NERDTree
+set encoding=utf8
+
+" Auto saving
+let g:auto_save = 1
 
 " Coc configs
-let g:coc_global_extensions = ['coc-tsserver', 'coc-vetur', 'coc-clangd']
+let g:coc_global_extensions = ['coc-tsserver', 'coc-vetur', 'coc-clangd', 'coc-emmet']
 
 " Airline
 let g:airline#extensions#tabline#fnamemod = ':t'
@@ -86,7 +94,6 @@ let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 set fillchars+=vert:│
 hi VertSplit ctermbg=NONE guibg=NONE
-set encoding=UTF-8
 
 " Vimspecter Config
 let g:vimspector_enable_mappings = 'HUMAN'
@@ -96,10 +103,9 @@ let g:gitgutter_override_sign_column_highlight = 1
 
 " Floaterm
 let g:floaterm_keymap_toggle = '<leader>t'
-let g:floaterm_height = 0.8
+let g:floaterm_height=0.8
 
 " REMAPS ------------------------------------------
-
 " Autocomplete
 inoremap <silent><expr> <tab> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<TAB>"
 inoremap <silent><expr> <cr> "\<c-g>u\<CR>"
@@ -115,8 +121,6 @@ nnoremap <S-j> :m .+1<CR>==
 nnoremap <S-k> :m .-2<CR>==
 vnoremap <S-j> :m '>+1<CR>gv=gv
 vnoremap <S-k> :m '<-2<CR>gv=gv
-map <Enter> o<ESC>
-map <S-Enter> O<ESC>
 
 " Keymap Coc
 nmap <leader>ac  <Plug>(coc-codeaction)
@@ -131,47 +135,25 @@ nnoremap <leader>nn :NERDTreeToggle<CR>
 nnoremap <leader>nf :NERDTreeFind<CR>
 
 " Floaterm
-nnoremap <silent> <leader>t :FloatermToggle<CR>
-let g:floaterm_height=0.9
+let g:floaterm_keymap_toggle = '<C-t>'
+let g:floaterm_height=0.7
 
 " Buffers navigation
 map <leader>b :Bufstop<CR>
 let g:BufstopAutoSpeedToggle = 1
 
-" HTML maps
-let g:user_emmet_leader_key='<tab>'
-let g:user_emmet_settings = {
-\  'variables': {'lang': 'ja'},
-\  'html': {
-\    'default_attributes': {
-\      'option': {'value': v:null},
-\      'textarea': {'id': v:null, 'name': v:null, 'cols': 10, 'rows': 10},
-\    },
-\    'snippets': {
-\      'html:5': "<!DOCTYPE html>\n"
-\              ."<html lang=\"${lang}\">\n"
-\              ."<head>\n"
-\              ."\t<meta charset=\"${charset}\"/>\n"
-\              ."\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>\n"
-\              ."\t<link rel=\"stylesheet\" href=\"style.css\">\n"
-\              ."\t<title>Page</title>\n"
-\              ."</head>\n"
-\              ."<body>\n"
-\              ."\n\n"
-\              ."\t<script src=\"app.js\"></script>\n"
-\              ."</body>\n"
-\              ."</html>",
-\    },
-\  },
-\}
+" Fzf maps
+map <Leader>ff :Files<CR>
+map <Leader>fb :BLines<CR>
+map <Leader>fa :Rg<CR>
+" let $FZF_DEFAULT_COMMAND = 'fd --type f'
 
 " Show docs keys
 map <Leader>k :call <SID>show_documentation()<CR>
 function! s:show_documentation()
-if (index(['vim','help'], &filetype) >= 0)
+  if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
   else
     call CocAction('doHover')
   endif
-
 endfunction
