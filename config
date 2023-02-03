@@ -67,6 +67,7 @@ let g:prettier#quickfix_enabled = 0
 autocmd BufWritePre *.ts,*.tsx,*.js,*.jsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
 
 " NERDTree
+let NERDTreeShowHidden = 1
 set encoding=utf8
 
 " Auto saving
